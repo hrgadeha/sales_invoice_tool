@@ -1,8 +1,6 @@
 // Copyright (c) 2019, Hardik Gadesha and contributors
 // For license information, please see license.txt
 
-{% include 'erpnext/selling/sales_common.js' %};
-
 frappe.ui.form.on('Sales Invoice Tool', {
 	"additional_discount_type": function(frm) {
 		frm.set_value("additional_discount_amount", "");
@@ -114,7 +112,7 @@ frappe.ui.form.on("Sales Invoice Tool Item", {
 });
 
 frappe.ui.form.on("Sales Invoice Tool Item",{
-	item_code : function (frm, cdt, cdn){
+	"item_code" : function (frm, cdt, cdn){
 	var d2 = locals[cdt][cdn];
 	if(d2.warehouse){
 	frappe.call({
@@ -134,7 +132,7 @@ frappe.ui.form.on("Sales Invoice Tool Item",{
 });
 
 frappe.ui.form.on("Sales Invoice Tool Item",{
-	warehouse : function (frm, cdt, cdn){
+	"warehouse" : function (frm, cdt, cdn){
 	var d2 = locals[cdt][cdn];
 	if(d2.item_code){
 	frappe.call({
@@ -244,7 +242,7 @@ frappe.ui.form.on("Sales Invoice Tool", {
 });
 
 frappe.ui.form.on("Sales Invoice Tool", {
-  gate_sales_invoice_list: function(frm) {
+  "gate_sales_invoice_list": function(frm) {
 	cur_frm.refresh();
 	cur_frm.clear_table("created_sales_invoice_table");
 	cur_frm.refresh_fields();

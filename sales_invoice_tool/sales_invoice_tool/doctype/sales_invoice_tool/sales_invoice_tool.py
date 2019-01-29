@@ -4,30 +4,46 @@
 
 from __future__ import unicode_literals
 import frappe
+from frappe import _
 from frappe import msgprint
 from frappe.model.document import Document
 from frappe.utils import money_in_words
 
 class SalesInvoiceTool(Document):
-	def on_submit(doc):
+	def validate(self):
+		control_amount = frappe.get_value('Invoice Tool Setting', 'ITS/001', 'control_amount')
 		items = []
-		for d in doc.sales_invoice_tool_item:
+		qty = 0
+		rate = 0
+		amount = 0
+		for d in self.sales_invoice_tool_item:
 			item_li = {"item_code": d.item_code,"qty": d.qty,"rate": d.rate,"warehouse":d.warehouse}
-			items.append(item_li)	
-		sales_invoice = frappe.get_doc({
-		"doctype": "Sales Invoice", 
-		"customer": doc.customer_name, 
-		"posting_date": doc.posting_date,
-		"base_discount_amount":doc.additional_discount_amount,
-		"additional_discount_percentage":doc.additional_discount_percentage,
-		"apply_discount_on":"Net Total",
-		"total":doc.total,
-		"taxes_and_charges":doc.taxes,
-		"created_from":doc.name,
-		"items": items
-		})
-		sales_invoice.insert(ignore_permissions=True)
-		sales_invoice.save()
+			items.append(item_li)
+			qty = qty + d.qty
+			rate = rate + d.rate
+			amount = rate * qty
+		if qty != 0:
+			msg = _("Amount = {0}")
+			frappe.throw(msg.format(amount))
+			
+		if self.grand_total > control_amount:
+			msg = _("Grand Total {0} is Greater Than Invoice Control Amount {1}")
+			frappe.throw(msg.format(self.grand_total, control_amount))
+		else:		
+			sales_invoice = frappe.get_doc({
+			"doctype": "Sales Invoice", 
+			"customer": self.customer_name, 
+			"posting_date": self.posting_date,
+			"base_discount_amount":self.additional_discount_amount,
+			"additional_discount_percentage":self.additional_discount_percentage,
+			"apply_discount_on":"Net Total",
+			"total":self.total,
+			"taxes_and_charges":self.taxes,
+			"created_from":self.name,
+			"items": items
+			})
+			sales_invoice.insert(ignore_permissions=True)
+			sales_invoice.save()
 
 @frappe.whitelist(allow_guest=True)
 def getStockBalance(item_code, warehouse):
