@@ -10,7 +10,7 @@ from frappe.model.document import Document
 from frappe.utils import money_in_words
 
 class SalesInvoiceTool(Document):
-	def validate(self):
+	def on_submit(self):
 		control_amount = frappe.get_value('Invoice Tool Setting', 'ITS/001', 'control_amount')
 		items = []
 		amount = 0
@@ -39,7 +39,7 @@ class SalesInvoiceTool(Document):
 					})
 					sales_invoice.insert(ignore_permissions=True)
 					sales_invoice.save()
-					amount = 0
+					amount = d.rate
 					items = []
 			if(last_qty>0):
 				items.append({"item_code": d.item_code,"qty": d.qty-last_qty,"rate": d.rate,"warehouse":d.warehouse})
