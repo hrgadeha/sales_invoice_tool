@@ -52,11 +52,11 @@ class SalesInvoiceTool(Document):
 			"doctype": "Sales Invoice", 
 			"customer": self.customer_name, 
 			"posting_date": self.posting_date,
-			"base_discount_amount":self.additional_discount_amount,
-			"additional_discount_percentage":self.additional_discount_percentage,
-			"apply_discount_on":"Net Total",
+			#"base_discount_amount":self.additional_discount_amount,
+			#"additional_discount_percentage":self.additional_discount_percentage,
+			#"apply_discount_on":"Net Total",
 			"total":amount,
-			"taxes_and_charges":self.taxes,
+			#"taxes_and_charges":self.taxes,
 			"created_from":self.name,
 			"items": items
 			})
