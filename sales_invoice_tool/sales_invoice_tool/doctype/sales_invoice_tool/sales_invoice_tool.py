@@ -62,7 +62,7 @@ class SalesInvoiceTool(Document):
 
 	def submit_all_invoice(self):
 		for d in self.created_sales_invoice_table:
-			frappe.msgprint(frappe._("Sales Invocie {0} Submitted").format(d.sales_invoice))
+			frappe.msgprint(frappe._("Sales Invoice {0} Submitted").format(d.sales_invoice))
 			sv = frappe.get_doc("Sales Invoice",d.sales_invoice)
 			sv.docstatus = 1
 			sv.update_modified=False
