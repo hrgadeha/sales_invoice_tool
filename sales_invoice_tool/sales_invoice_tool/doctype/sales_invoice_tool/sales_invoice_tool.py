@@ -11,7 +11,7 @@ from frappe.utils import money_in_words
 
 class SalesInvoiceTool(Document):
 	def on_submit(self):
-		control_amount = frappe.get_value('Invoice Tool Setting', 'ITS/001', 'control_amount')
+		control_amount = frappe.db.get_single_value('Invoice Setting', 'control_amount')
 		items = []
 		amount = 0
 		last_qty = -1
@@ -52,16 +52,23 @@ class SalesInvoiceTool(Document):
 			"doctype": "Sales Invoice", 
 			"customer": self.customer_name, 
 			"posting_date": self.posting_date,
-			#"base_discount_amount":self.additional_discount_amount,
-			#"additional_discount_percentage":self.additional_discount_percentage,
-			#"apply_discount_on":"Net Total",
 			"total":amount,
-			#"taxes_and_charges":self.taxes,
+			"taxes_and_charges":self.taxes,
 			"created_from":self.name,
 			"items": items
 			})
 			sales_invoice.insert(ignore_permissions=True)
 			sales_invoice.save()
+
+	def submit_all_invoice(self):
+		for d in self.created_sales_invoice_table:
+			frappe.msgprint(frappe._("Sales Invocie {0} Submitted").format(d.sales_invoice))
+			sv = frappe.get_doc("Sales Invoice",d.sales_invoice)
+			sv.docstatus = 1
+			sv.update_modified=False
+			sv.save()
+			sv.submit()
+
 
 @frappe.whitelist(allow_guest=True)
 def getStockBalance(item_code, warehouse):
@@ -73,7 +80,7 @@ def getStockBalance(item_code, warehouse):
 
 @frappe.whitelist(allow_guest=True)
 def insert_data(doctype, name):
-	query="select name, grand_total from `tabSales Invoice` where created_from = '"+str(name)+"';"
+	query="select name, grand_total from `tabSales Invoice` where docstatus = 0 and created_from = '"+str(name)+"';"
 	li=[]
 	dic=frappe.db.sql(query, as_dict=True)
 	for i in dic:

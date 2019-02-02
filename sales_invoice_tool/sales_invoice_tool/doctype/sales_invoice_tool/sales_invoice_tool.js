@@ -266,3 +266,9 @@ callback:function(r){
     });
 }
 });
+
+cur_frm.cscript.submit_all_invoice = function(doc, cdt, cdn) {
+		return $c('runserverobj', {'method':'submit_all_invoice', 'docs':doc},
+			function(r, rt) {
+			});
+}

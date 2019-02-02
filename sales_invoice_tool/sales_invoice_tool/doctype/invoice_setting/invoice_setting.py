@@ -6,5 +6,5 @@ from __future__ import unicode_literals
 import frappe
 from frappe.model.document import Document
 
-class InvoiceToolSetting(Document):
+class InvoiceSetting(Document):
 	pass
